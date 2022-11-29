@@ -93,8 +93,8 @@ var start = new Button({
 });
 
 var home = new Button({
-    x: 10,
-    y: 10,
+    x: 0,
+    y: 350,
     label: "       Home",
     onClick: function() {
         currentScene = 0;
@@ -104,7 +104,7 @@ var home = new Button({
 var Tile = function(x, y, c) {
     this.x = x;
     this.y = y;
-    this.size = 50;
+    this.size = 45;
     this.c = c;
 };
 Tile.prototype.draw = function() {
@@ -116,8 +116,8 @@ for (var i = 0; i < NUM_COLS; i++) {
         C = 1;}
         else{C = 0;}
     for (var j = 0; j < NUM_ROWS; j++) {
-        var tileX = i * 50;
-        var tileY = j * 50;
+        var tileX = i * 45;
+        var tileY = j * 45;
         var tileC = tileColor[C];
         C++;
         if(C > 1){
@@ -237,6 +237,7 @@ var splash = function(){
 };
 
 var game = function() {
+    background(255, 255, 255);
     for (var i = 0; i < tiles.length; i++) {
     tiles[i].draw();
 }
