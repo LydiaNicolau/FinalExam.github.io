@@ -129,12 +129,14 @@ for (var i = 0; i < NUM_COLS; i++) {
 var bChecker = [];
 var rChecker = [];
 
-var RChecker = function(x, y) {
+var Checker = function(x, y, c) {
     this.x = x;
     this.y = y;
-    this.size = 40;};
-RChecker.prototype.draw = function() {
-    fill(255, 0, 0);
+    this.size = 40;
+    this.c = c;
+};
+Checker.prototype.draw = function() {
+    fill(this.c);
     stroke(255, 255, 255);
     ellipse(this.x, this.y, this.size, this.size);
 };
@@ -142,23 +144,12 @@ for(var i = 0; i < NUM_COLS; i++){
     for(var j = 0; j < 2; j++){
         var checkerX = i * 45 + 22;
         var checkerY = j * 45 + 22;
-        rChecker.push(new RChecker(checkerX, checkerY));
+        rChecker.push(new Checker(checkerX, checkerY, color(255, 0, 0)));
     }
-}
-var BChecker = function(x,y) {
-    this.x = x;
-    this.y = y;
-    this.size = 40;};
-BChecker.prototype.draw = function() {
-    fill(0, 0, 0);
-    stroke(255, 255, 255);
-    ellipse(this.x,this.y,this.size,this.size);
-};
-for(var i = 0; i < NUM_COLS; i++){
-    for(var j = 6; j < 8; j++) {
-        var checkerX = i *45 + 22;
-        var checkerY = j * 45 +22;
-        bChecker.push(new BChecker(checkerX,checkerY));
+    for(var j = 6; j < 8; j++){
+        var checkerX = i * 45 + 22;
+        var checkerY = j * 45 + 22;
+        bChecker.push(new Checker(checkerX, checkerY, color(65, 65, 65)));
     }
 }
 
