@@ -1,0 +1,156 @@
+https://www.khanacademy.org/computer-programming/new-program/5696403539542016
+
+COde
+var tiles = [];
+var bChecker = [];
+var rChecker = [];
+var NUM_COLS = 8;
+var NUM_ROWS =8;
+var playersTurn = 0; // 0 = black, 1 = red
+var player = [color(65, 65, 65), color(255,0,0)];
+var checkerMoved = [];
+
+var Tile = function(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.size = 45;
+    this.color = color;
+    this.occupied = false;
+};
+Tile.prototype.draw = function() {
+    fill(this.color);
+    rect(this.x, this.y, this.size, this.size);
+};
+for (var i = 0; i < NUM_COLS; i++) {
+    if(i === 0 || i === 2 || i === 4 || i === 6 || i === 8){
+        for (var j = 0; j < NUM_ROWS; j+=2) {
+            var tileX = i * 45;
+            var tileY = j * 45 + 45;
+            tiles.push(new Tile(tileX, tileY, color(0, 0, 0)));
+        }
+    }
+    else {
+        for (var j = 0; j < NUM_ROWS; j+=2) {
+            var tileX = i * 45;
+            var tileY = j * 45;
+            tiles.push(new Tile(tileX, tileY, color(0, 0, 0)));
+        }
+    }
+}
+Tile.prototype.isUnderMouse = function(x, y) {
+    return x >= this.x && x <= this.x + this.size  &&
+        y >= this.y && y <= this.y + this.size;
+};
+
+var Checker = function(x, y, c) {
+    this.x = x;
+    this.y = y;
+    this.size = 40;
+    this.c = c;
+};
+Checker.prototype.draw = function() {
+    fill(this.c);
+    stroke(255, 255, 255);
+    ellipse(this.x, this.y, this.size, this.size);
+};
+for(var i = 0; i <= 29; i++) {
+    var checkerX = tiles[i].x + 22;
+    var checkerY = tiles[i].y + 22;
+    rChecker.push(new Checker(checkerX, checkerY, color(255, 0, 0)));
+    tiles[i].occupied = true;
+    if(i === 0 || i === 8 || i === 16 || i === 24) {
+         i += 3;
+    }
+    if(i === 5 || i === 13 || i === 21) {
+        i += 2;
+    }
+}
+for(var i = 2; i <= 31; i++) {
+    var checkerX = tiles[i].x + 22;
+    var checkerY = tiles[i].y + 22;
+    bChecker.push(new Checker(checkerX, checkerY, color(65, 65, 65)));
+    tiles[i].occupied = true;
+    if(i === 3 || i === 11 || i === 19 || i === 27) {
+         i += 3;
+    }
+    if(i === 7 || i === 15 || i === 23) {
+        i += 2;
+    }
+}
+Checker.prototype.isUnderMouse = function(x,y){
+    return x >= this.x - this.size/2 && x <= this.x + this.size/2  &&
+        y >= this.y - this.size/2 && y <= this.y + this.size/2;
+};
+
+mouseClicked = function() {
+    if(playersTurn === 0){
+        for(var j = 0; j < tiles.length; j++){
+            for(var m = 0; m < bChecker.length; m++){
+                if(checkerMoved.length === 0 && tiles[j].color === color(0, 0, 0)){
+                    if(tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                        tiles[j].color = color(255, 255, 0);
+                    }
+                }
+                if(tiles[j].color === color(255, 255, 0)){
+                    for(var l = 0; l < tiles.length; l++){
+                        if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY)){
+                            if(bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                bChecker[m].x = tiles[l].x + 22;
+                                bChecker[m].y = tiles[l].y + 22;
+                                tiles[l].occupied = true;
+                                tiles[j].occupied = false;
+                                tiles[j].color = color(0, 0, 0);
+                                checkerMoved.push(bChecker[m]);
+                                playersTurn += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } // move black checker
+    if(playersTurn === 1){
+        for(var j = 0; j < tiles.length; j++){
+            for(var m = 0; m < rChecker.length; m++){
+                if(checkerMoved.length === 0 && tiles[j].color === color(0, 0, 0)){
+                    if(tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                        tiles[j].color = color(255, 255, 0);
+                    }
+                }
+                if(tiles[j].color === color(255, 255, 0)){
+                    for(var l = 0; l < tiles.length; l++){
+                        if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY)){
+                            if(rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                rChecker[m].x = tiles[l].x + 22;
+                                rChecker[m].y = tiles[l].y + 22;
+                                tiles[l].occupied = true;
+                                tiles[j].occupied = false;
+                                tiles[j].color = color(0, 0, 0);
+                                checkerMoved.push(rChecker[m]);
+                                playersTurn -= 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } // move red checker
+    if(checkerMoved.length === 1){
+        checkerMoved.length = 0;
+    }
+};
+
+draw = function() {
+    background(255, 255, 255);
+    for (var i = 0; i < tiles.length; i++) {
+        tiles[i].draw();
+    }
+    for (var i = 0; i < rChecker.length; i++){
+        rChecker[i].draw();
+    }
+    for (var i = 0; i < bChecker.length; i++){
+        bChecker[i].draw();
+    }
+    fill(player[playersTurn]);
+    rect(360, 25, 40, 50);
+};
