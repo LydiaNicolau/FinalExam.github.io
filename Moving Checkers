@@ -149,7 +149,7 @@ Checker.prototype.draw = function() {
     ellipse(this.x, this.y, this.size, this.size);
     if(this.king === true){
         fill(255, 255, 255);
-        text("K", this.x - 5, this.y + 5);
+        text("K", this.x - 5, this.y - 5);
     }
 };
 for(var i = 0; i <= 29; i++) {
@@ -305,6 +305,12 @@ var game = function() {
     for (var i = 0; i < bChecker.length; i++){
         bChecker[i].draw();
     }
+    for (var i = 0; i < bkChecker.length; i++){
+        bkChecker[i].draw();
+    }
+    for (var i = 0; i < rkChecker.length; i++){
+        rkChecker[i].draw();
+    }
     home.draw();
     fill(0, 0, 0);
     text("Score: ", 155, 370);
@@ -346,6 +352,31 @@ mouseClicked = function() {
                             }
                         }
                     }
+                    if(bChecker[m].x === tiles[4].x + 22 && bChecker[m].y === tiles[4].y + 22 || bChecker[m].x === tiles[12].x + 22 && bChecker[m].y === tiles[12].y + 22 || bChecker[m].x === tiles[20].x + 22 && bChecker[m].y === tiles[20].y + 22 || bChecker[m].x === tiles[28].x + 22 && bChecker[m].y === tiles[28].y + 22){
+                        bChecker[m].king = true;
+                        bkChecker.push(bChecker[m]);
+                        bChecker.splice(m,1);
+                    }
+                }
+                for(var m = 0; m < bkChecker.length; m++){
+                    if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && bkChecker[m].x === tiles[j].x + 22 && bkChecker[m].x === tiles[j].y + 22){
+                        tiles[j].color = color(255, 255, 0);
+                        selectedTile.push(tiles[j]);
+                    }
+                    if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
+                        for(var l = 0; l < tiles.length; l++){
+                            if(tiles[l].x === tiles[j].x + 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x + 45 && tiles[l].y > tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y > tiles[j].y){
+                                if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bkChecker[m].x === tiles[j].x + 22 && bkChecker[m].y === tiles[j].y + 22){
+                                    bkChecker[m].x = tiles[l].x + 22;
+                                    bkChecker[m].y = tiles[l].y + 22;
+                                    tiles[l].occupied = true;
+                                    tiles[j].occupied = false;
+                                    tiles[j].color = color(0, 0, 0);
+                                    playersTurn += 1;
+                                }
+                            }
+                        }
+                    }
                 }
             }
     } // move black checker
@@ -366,6 +397,31 @@ mouseClicked = function() {
                                 tiles[j].occupied = false;
                                 tiles[j].color = color(0, 0, 0);
                                 playersTurn -= 1;
+                            }
+                        }
+                    }
+                }
+                if(rChecker[m].x === tiles[3].x + 22 && rChecker[m].y === tiles[3].y + 22 || rChecker[m].x === tiles[11].x + 22 && rChecker[m].y === tiles[11].y + 22 || rChecker[m].x === tiles[19].x + 22 && rChecker[m].y === tiles[19].y + 22 || rChecker[m].x === tiles[27].x + 22 && rChecker[m].y === tiles[27].y + 22){
+                        rChecker[m].king = true;
+                        rkChecker.push(rChecker[m]);
+                        rChecker.splice(m,1);
+                    }
+            }
+            for(var m = 0; m < rkChecker.length; m++){
+                if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && rkChecker[m].x === tiles[j].x + 22 && rkChecker[m].x === tiles[j].y + 22){
+                    tiles[j].color = color(255, 255, 0);
+                    selectedTile.push(tiles[j]);
+                }
+                if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
+                    for(var l = 0; l < tiles.length; l++){
+                        if(tiles[l].x === tiles[j].x + 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x + 45 && tiles[l].y > tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y > tiles[j].y){
+                            if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rkChecker[m].x === tiles[j].x + 22 && rkChecker[m].y === tiles[j].y + 22){
+                                rkChecker[m].x = tiles[l].x + 22;
+                                rkChecker[m].y = tiles[l].y + 22;
+                                tiles[l].occupied = true;
+                                tiles[j].occupied = false;
+                                tiles[j].color = color(0, 0, 0);
+                                playersTurn += 1;
                             }
                         }
                     }
