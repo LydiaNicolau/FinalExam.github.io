@@ -2,19 +2,17 @@ https://www.khanacademy.org/computer-programming/new-program/6429196766724096
 
 COde
 var currentScene = 0; // 0 = splash 1 = game
-var tiles = [];
-var bChecker = [];
-var rChecker = [];
-var bkChecker = [];
-var rkChecker = [];
-var selectedTile = [];
-var NUM_COLS = 8;
-var NUM_ROWS = 8;
+var tiles = []; // array of the tiles
+var bChecker = []; // array of the black checkers
+var rChecker = []; // array of the red checkers
+var selectedTile = []; // array of the selcected tiles
+var NUM_COLS = 8; // variable for the number of columns
+var NUM_ROWS = 8; // variable for the number of rows
 var numMatches = 0;
 var playersTurn = 0; // 0 = black, 1 = red
-var player = [color(65, 65, 65), color(255,0,0)];
+var player = [color(65, 65, 65), color(255,0,0)]; // array of the players colors
 var stillPlaying = false;
-var seconds = 0;
+var seconds = 0; // variable for the numebr of seconds
 
 var drawBitmojiLydia = function(bitmojiX, bitmojiY, bitmojiH) {
 
@@ -58,7 +56,7 @@ var drawBitmojiHead = function(bitmojiX, bitmojiY, bitmojiH) {
     arc(bitmojiX + 111*bitmojiH/150,bitmojiY + 91*bitmojiH/150,22*bitmojiH/150,5*bitmojiH/150,-3*bitmojiH/150,114*bitmojiH/150); //eyebrow right
 };
 drawBitmojiHead(bitmojiX, bitmojiY, bitmojiH);
-};
+}; // Lydia's bitmoji
 
 var Button = function(config) {
     this.x = config.x || 0;
@@ -67,7 +65,7 @@ var Button = function(config) {
     this.height = config.height || 50;
     this.label = config.label || "Click";
     this.onClick = config.onClick || function() {};
-};
+}; // Object button method
 Button.prototype.draw = function() {
     fill(77, 159, 235);
     rect(this.x, this.y, this.width, this.height, 5);
@@ -75,18 +73,18 @@ Button.prototype.draw = function() {
     textSize(19);
     textAlign(LEFT, TOP);
     text(this.label, this.x+10, this.y+this.height/4);
-};
+}; // Prototype to draw the button
 Button.prototype.isMouseInside = function() {
     return mouseX > this.x &&
            mouseX < (this.x + this.width) &&
            mouseY > this.y &&
            mouseY < (this.y + this.height);
-};
+}; // Prototype to tell if the mouse is over the button
 Button.prototype.handleMouseClick = function() {
     if (this.isMouseInside()) {
         this.onClick();
     }
-};
+}; // prototype for when the button is clicked
 var start = new Button({
     x: 125,
     y: 300,
@@ -94,7 +92,7 @@ var start = new Button({
     onClick: function() {
         currentScene = 1;
     }
-});
+}); // start button
 var home = new Button({
     x: 0,
     y: 360,
@@ -102,7 +100,7 @@ var home = new Button({
     onClick: function() {
         currentScene = 0;
     }
-});
+}); // home button
 
 var Tile = function(x, y, color, occupied) {
     this.x = x;
@@ -110,11 +108,11 @@ var Tile = function(x, y, color, occupied) {
     this.size = 45;
     this.color = color;
     this.occupied = false;
-};
+}; // Object tile method
 Tile.prototype.draw = function() {
     fill(this.color);
     rect(this.x, this.y, this.size, this.size);
-};
+}; // Prototype to draw tiles
 for (var i = 0; i < NUM_COLS; i++) {
     if(i === 0 || i === 2 || i === 4 || i === 6 || i === 8){
         for (var j = 0; j < NUM_ROWS; j+=2) {
@@ -130,11 +128,11 @@ for (var i = 0; i < NUM_COLS; i++) {
             tiles.push(new Tile(tileX, tileY, color(0, 0, 0)));
         }
     }
-}
+} // for loop to put the tiles into the array given different x and y positions
 Tile.prototype.isUnderMouse = function(x, y) {
     return x >= this.x && x <= this.x + this.size  &&
         y >= this.y && y <= this.y + this.size;
-};
+}; // Prototype to tell if the mouse is over the tiles
 
 var Checker = function(x, y, c) {
     this.x = x;
@@ -142,7 +140,7 @@ var Checker = function(x, y, c) {
     this.size = 40;
     this.c = c;
     this.king = false;
-};
+}; // object checker method
 Checker.prototype.draw = function() {
     fill(this.c);
     stroke(255, 255, 255);
@@ -151,7 +149,7 @@ Checker.prototype.draw = function() {
         fill(255, 255, 255);
         text("K", this.x - 5, this.y - 5);
     }
-};
+}; // prototype to draw the checkers
 for(var i = 0; i <= 29; i++) {
     var checkerX = tiles[i].x + 22;
     var checkerY = tiles[i].y + 22;
@@ -164,7 +162,7 @@ for(var i = 0; i <= 29; i++) {
     if(i === 5 || i === 13 || i === 21) {
         i += 2;
     }
-}
+} // for loop to put red checkers into an array with different x and y positions
 for(var i = 2; i <= 31; i++) {
     var checkerX = tiles[i].x + 22;
     var checkerY = tiles[i].y + 22;
@@ -177,11 +175,11 @@ for(var i = 2; i <= 31; i++) {
     if(i === 7 || i === 15 || i === 23) {
         i += 2;
     }
-}
+} // for loop to put black checkers into an array with different x and y positions
 Checker.prototype.isUnderMouse = function(x,y){
     return x >= this.x - this.size/2 && x <= this.x + this.size/2  &&
         y >= this.y - this.size/2 && y <= this.y + this.size/2;
-};
+}; // Prototype to tell if the mouse is over the checkers
 
 var drawHair = function (x,y,h){
     fill(179, 78, 242);
@@ -273,7 +271,7 @@ var drawBitmoji = function(x,y,h){
     drawShirt(x+50,y,h);
     drawHeadphones(x+50,y,h);
     drawShoulders(x+50,y,h);
-};
+}; // Genevieve's Bitmoji
 
 var splash = function(){
     stillPlaying = false;
@@ -291,7 +289,7 @@ var splash = function(){
     strokeWeight(1);
     drawBitmojiLydia (100,173,88);
     start.draw();
-};
+}; // splash scene
 
 var game = function() {
     stillPlaying = true;
@@ -305,12 +303,6 @@ var game = function() {
     for (var i = 0; i < bChecker.length; i++){
         bChecker[i].draw();
     }
-    for (var i = 0; i < bkChecker.length; i++){
-        bkChecker[i].draw();
-    }
-    for (var i = 0; i < rkChecker.length; i++){
-        rkChecker[i].draw();
-    }
     home.draw();
     fill(0, 0, 0);
     text("Score: ", 155, 370);
@@ -320,27 +312,41 @@ var game = function() {
     text("turn", 370, 75);
     fill(player[playersTurn]);
     rect(360, 25, 40, 50);
-    };
+    }; // game scene
     
 mouseClicked = function() {
     if(currentScene === 0){
-        start.handleMouseClick();
+        start.handleMouseClick(); // if on the splash scene the start button can be pressed
     }
     if(currentScene === 1){
-        home.handleMouseClick();
+        home.handleMouseClick(); // if on the game scene the home button can be pressed
         if(playersTurn === 0 && stillPlaying === true){
             if(selectedTile.length === 2){
                 selectedTile.length = 0;
-            }
+            } // empty selected tiles if there are 2 elements in the array selected tile
             for(var j = 0; j < tiles.length; j++){
                 for(var m = 0; m < bChecker.length; m++){
-                    if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
-                        tiles[j].color = color(255, 255, 0);
-                        selectedTile.push(tiles[j]);
-                    }
+                    if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true){
+                        if(bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                            tiles[j].color = color(255, 255, 0);
+                            selectedTile.push(tiles[j]);
+                        }
+                    } // seclect the checker you want to move
                     if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
                         for(var l = 0; l < tiles.length; l++){
-                            if(tiles[l].x === tiles[j].x + 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y < tiles[j].y){
+                            if(bChecker[m].king === true){
+                                if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
+                                    if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                        bChecker[m].x = tiles[l].x + 22;
+                                        bChecker[m].y = tiles[l].y + 22;
+                                        tiles[l].occupied = true;
+                                        tiles[j].occupied = false;
+                                        tiles[j].color = color(0, 0, 0);
+                                        playersTurn += 1;
+                                    }
+                                }
+                            } // move black king checher to empty tile in front or behind to a diaganol
+                            else if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
                                 if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
                                     bChecker[m].x = tiles[l].x + 22;
                                     bChecker[m].y = tiles[l].y + 22;
@@ -348,48 +354,41 @@ mouseClicked = function() {
                                     tiles[j].occupied = false;
                                     tiles[j].color = color(0, 0, 0);
                                     playersTurn += 1;
+                                    if(bChecker[m].x === tiles[4].x + 22 && bChecker[m].y === tiles[4].y + 22 || bChecker[m].x === tiles[12].x + 22 && bChecker[m].y === tiles[12].y + 22 || bChecker[m].x === tiles[20].x + 22 && bChecker[m].y === tiles[20].y + 22 || bChecker[m].x === tiles[28].x + 22 && bChecker[m].y === tiles[28].y + 22){
+                                        bChecker[m].king = true;
+                                    } // if the black checkers get to the other side make them kings
                                 }
-                            }
+                            } // move the checker to an empty tile in front of it to a diaganol
                         }
-                    }
-                    if(bChecker[m].x === tiles[4].x + 22 && bChecker[m].y === tiles[4].y + 22 || bChecker[m].x === tiles[12].x + 22 && bChecker[m].y === tiles[12].y + 22 || bChecker[m].x === tiles[20].x + 22 && bChecker[m].y === tiles[20].y + 22 || bChecker[m].x === tiles[28].x + 22 && bChecker[m].y === tiles[28].y + 22){
-                        bChecker[m].king = true;
-                        bkChecker.push(bChecker[m]);
-                        bChecker.splice(m,1);
-                    }
-                }
-                for(var m = 0; m < bkChecker.length; m++){
-                    if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && bkChecker[m].x === tiles[j].x + 22 && bkChecker[m].x === tiles[j].y + 22){
-                        tiles[j].color = color(255, 255, 0);
-                        selectedTile.push(tiles[j]);
-                    }
-                    if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
-                        for(var l = 0; l < tiles.length; l++){
-                            if(tiles[l].x === tiles[j].x + 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x + 45 && tiles[l].y > tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y > tiles[j].y){
-                                if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bkChecker[m].x === tiles[j].x + 22 && bkChecker[m].y === tiles[j].y + 22){
-                                    bkChecker[m].x = tiles[l].x + 22;
-                                    bkChecker[m].y = tiles[l].y + 22;
-                                    tiles[l].occupied = true;
-                                    tiles[j].occupied = false;
-                                    tiles[j].color = color(0, 0, 0);
-                                    playersTurn += 1;
-                                }
-                            }
-                        }
-                    }
+                    } // move checkers
                 }
             }
-    } // move black checker
+        } // move black checker
         if(playersTurn === 1 && stillPlaying === true){
         for(var j = 0; j < tiles.length; j++){
             for(var m = 0; m < rChecker.length; m++){
-                if(selectedTile.length === 1 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
-                    tiles[j].color = color(255, 255, 0);
-                    selectedTile.push(tiles[j]);
-                }
+                if(selectedTile.length === 1 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true){
+                    if(rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                        tiles[j].color = color(255, 255, 0);
+                        selectedTile.push(tiles[j]);
+                    }
+                } // select the checker you want to move
                 if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 2){
                     for(var l = 0; l < tiles.length; l++){
-                        if(tiles[l].x === tiles[j].x + 45 && tiles[l].y > tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y > tiles[j].y){
+                        if(rChecker[m].king === true){
+                                if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
+                                    if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                        rChecker[m].x = tiles[l].x + 22;
+                                        rChecker[m].y = tiles[l].y + 22;
+                                        tiles[l].occupied = true;
+                                        tiles[j].occupied = false;
+                                        tiles[j].color = color(0, 0, 0);
+                                        playersTurn -= 1;
+                                    }
+                                }
+                            } // move red king checher to empty tile in front or behind to a diaganol
+                        
+                        else if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45){
                             if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
                                 rChecker[m].x = tiles[l].x + 22;
                                 rChecker[m].y = tiles[l].y + 22;
@@ -397,33 +396,11 @@ mouseClicked = function() {
                                 tiles[j].occupied = false;
                                 tiles[j].color = color(0, 0, 0);
                                 playersTurn -= 1;
-                            }
-                        }
-                    }
-                }
-                if(rChecker[m].x === tiles[3].x + 22 && rChecker[m].y === tiles[3].y + 22 || rChecker[m].x === tiles[11].x + 22 && rChecker[m].y === tiles[11].y + 22 || rChecker[m].x === tiles[19].x + 22 && rChecker[m].y === tiles[19].y + 22 || rChecker[m].x === tiles[27].x + 22 && rChecker[m].y === tiles[27].y + 22){
+                                if(rChecker[m].x === tiles[3].x + 22 && rChecker[m].y === tiles[3].y + 22 || rChecker[m].x === tiles[11].x + 22 && rChecker[m].y === tiles[11].y + 22 || rChecker[m].x === tiles[19].x + 22 && rChecker[m].y === tiles[19].y + 22 || rChecker[m].x === tiles[27].x + 22 && rChecker[m].y === tiles[27].y + 22){
                         rChecker[m].king = true;
-                        rkChecker.push(rChecker[m]);
-                        rChecker.splice(m,1);
-                    }
-            }
-            for(var m = 0; m < rkChecker.length; m++){
-                if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true && rkChecker[m].x === tiles[j].x + 22 && rkChecker[m].x === tiles[j].y + 22){
-                    tiles[j].color = color(255, 255, 0);
-                    selectedTile.push(tiles[j]);
-                }
-                if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
-                    for(var l = 0; l < tiles.length; l++){
-                        if(tiles[l].x === tiles[j].x + 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y < tiles[j].y || tiles[l].x === tiles[j].x + 45 && tiles[l].y > tiles[j].y || tiles[l].x === tiles[j].x - 45 && tiles[l].y > tiles[j].y){
-                            if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rkChecker[m].x === tiles[j].x + 22 && rkChecker[m].y === tiles[j].y + 22){
-                                rkChecker[m].x = tiles[l].x + 22;
-                                rkChecker[m].y = tiles[l].y + 22;
-                                tiles[l].occupied = true;
-                                tiles[j].occupied = false;
-                                tiles[j].color = color(0, 0, 0);
-                                playersTurn += 1;
+                    } // if red checkers get to the opposite side make them kings
                             }
-                        }
+                        } // move the checker to an empty tile under it to a diaganol
                     }
                 }
             }
@@ -434,10 +411,10 @@ mouseClicked = function() {
 
 draw = function() {
     if(currentScene === 0){
-        splash();}
+        splash();} // if the current scene is 0 show splash scene
     if(currentScene === 1){
-        game();}
+        game();} // if the current scene is 1 show game scene
     if (stillPlaying === true){
         seconds += 1/60;
-    }
+    } // if still playing is true add 1/60 to seconds so that 1 is added to seconds every second
 };
