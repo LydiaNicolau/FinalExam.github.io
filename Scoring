@@ -1,0 +1,518 @@
+https://www.khanacademy.org/computer-programming/help-me/5788015728836608
+
+var currentScene = 0; // 0 = splash 1 = game
+var tiles = []; // array of the tiles
+var bChecker = []; // array of the black checkers
+var rChecker = []; // array of the red checkers
+var selectedTile = []; // array of the selcected tiles
+var NUM_COLS = 8; // variable for the number of columns
+var NUM_ROWS = 8; // variable for the number of rows
+var playersTurn = 0; // 0 = black, 1 = red
+var rScore = 0; //red team score
+var bScore = 0; //black team score
+var player = [color(65, 65, 65), color(255,0,0)]; // array of the players colors
+var stillPlaying = false;
+var seconds = 0; // variable for the numebr of seconds
+
+var drawBitmojiLydia = function(bitmojiX, bitmojiY, bitmojiH) {
+
+var drawBitmojiBody = function(bitmojiX, bitmojiY, bitmojiH) {
+    noStroke();
+    fill(240, 101, 170); //shirt color
+    rect(bitmojiX + 50*bitmojiH/150,bitmojiY + 144*bitmojiH/150,52*bitmojiH/150,62*bitmojiH/150); //shirt left side
+    rect(bitmojiX + 100*bitmojiH/150,bitmojiY + 144*bitmojiH/150,46*bitmojiH/150,62*bitmojiH/150); // shirt right side
+    fill(255, 255, 255); //shirt writing fill
+    textSize(20*bitmojiH/150); 
+    text("LN", bitmojiX + 86*bitmojiH/150,bitmojiY + 177*bitmojiH/150); //writing on shirt
+};
+drawBitmojiBody(bitmojiX, bitmojiY, bitmojiH); 
+
+var drawBitmojiHead = function(bitmojiX, bitmojiY, bitmojiH) {
+    noStroke();
+    fill(255,224,189); //skin tone
+    ellipse(bitmojiX + 100*bitmojiH/150, bitmojiY + 100*bitmojiH/150, 85*bitmojiH/150,100*bitmojiH/150); //head
+    fill(255, 255, 255);
+    fill(100, 232, 232);
+    arc(bitmojiX + 61*bitmojiH/150,bitmojiY + 137*bitmojiH/150,28*bitmojiH/150,55*bitmojiH/150,0*bitmojiH/150,361*bitmojiH/150); //left chisel
+    arc(bitmojiX + 135*bitmojiH/150,bitmojiY + 137*bitmojiH/150,28*bitmojiH/150,55*bitmojiH/150,0*bitmojiH/150,361*bitmojiH/150); //right chisel
+    fill(78,53,36); //hair fill
+    quad(bitmojiX + 50*bitmojiH/150,bitmojiY + 98*bitmojiH/150,bitmojiX + 63*bitmojiH/150,bitmojiY + 66*bitmojiH/150,bitmojiX + 90*bitmojiH/150,bitmojiY + 50*bitmojiH/150     ,bitmojiX + 70*bitmojiH/150,bitmojiY + 99*bitmojiH/150); //left hair
+    quad(bitmojiX + 146*bitmojiH/150,bitmojiY + 95*bitmojiH/150,bitmojiX + 133*bitmojiH/150,bitmojiY + 65*bitmojiH/150,bitmojiX + 111*bitmojiH/150,bitmojiY + 53*bitmojiH/150,bitmojiX + 126*bitmojiH/150,bitmojiY + 95*bitmojiH/150); //right hair
+    ellipse(bitmojiX + 100*bitmojiH/150,bitmojiY + 63*bitmojiH/150,62*bitmojiH/150,28*bitmojiH/150); //top hair
+        fill(78,53,36); //hair fill
+    rect(bitmojiX + 50*bitmojiH/150,bitmojiY + 94*bitmojiH/150,20*bitmojiH/150,112*bitmojiH/150); // strands of hair left side
+    rect(bitmojiX + 126*bitmojiH/150,bitmojiY + 94*bitmojiH/150,20*bitmojiH/150,112*bitmojiH/150); //stands of hair right side
+    fill(112, 68, 38); //eye fill
+    ellipse(bitmojiX + 90*bitmojiH/150,bitmojiY + 100*bitmojiH/150,8*bitmojiH/150,6*bitmojiH/150); //left eye
+    ellipse(bitmojiX + 114*bitmojiH/150,bitmojiY + 100*bitmojiH/150,8*bitmojiH/150,6*bitmojiH/150); //right eye
+    stroke(0, 0, 0);
+    fill(255,224,189); //skin tone
+    bezier(bitmojiX + 99*bitmojiH/150,bitmojiY + 101*bitmojiH/150,bitmojiX + 117*bitmojiH/150,bitmojiY + 118*bitmojiH/150,bitmojiX + 94*bitmojiH/150,bitmojiY + 118*bitmojiH/150,bitmojiX + 99*bitmojiH/150,bitmojiY + 115*bitmojiH/150); //nose
+    fill(255, 255, 255); //white teeth
+    arc(bitmojiX + 99*bitmojiH/150,bitmojiY + 125*bitmojiH/150,30*bitmojiH/150,13*bitmojiH/150,1*bitmojiH/150,280*bitmojiH/150); //mouth
+    line (bitmojiX + 83*bitmojiH/150,bitmojiY + 124*bitmojiH/150,bitmojiX + 114*bitmojiH/150,bitmojiY + 124*bitmojiH/150); //top of mouth
+    fill(0, 0, 0); //eyebrow color
+    arc(bitmojiX + 89*bitmojiH/150,bitmojiY + 91*bitmojiH/150,16*bitmojiH/150,5*bitmojiH/150,-3*bitmojiH/150,144*bitmojiH/150); //eyebrow left
+    arc(bitmojiX + 111*bitmojiH/150,bitmojiY + 91*bitmojiH/150,22*bitmojiH/150,5*bitmojiH/150,-3*bitmojiH/150,114*bitmojiH/150); //eyebrow right
+};
+drawBitmojiHead(bitmojiX, bitmojiY, bitmojiH);
+}; // Lydia's bitmoji
+
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+}; // Object button method
+Button.prototype.draw = function() {
+    fill(77, 159, 235);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x+10, this.y+this.height/4);
+}; // Prototype to draw the button
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+}; // Prototype to tell if the mouse is over the button
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+}; // prototype for when the button is clicked
+var start = new Button({
+    x: 125,
+    y: 300,
+    label: "        Start",
+    onClick: function() {
+        currentScene = 1;
+    }
+}); // start button
+var home = new Button({
+    x: 0,
+    y: 360,
+    label: "       Home",
+    onClick: function() {
+        currentScene = 0;
+    }
+}); // home button
+
+var Tile = function(x, y, color, occupied) {
+    this.x = x;
+    this.y = y;
+    this.size = 45;
+    this.score = 0;
+    this.color = color;
+    this.occupied = false;
+}; // Object tile method
+Tile.prototype.draw = function() {
+    fill(this.color);
+    rect(this.x, this.y, this.size, this.size);
+}; // Prototype to draw tiles
+for (var i = 0; i < NUM_COLS; i++) {
+    if(i === 0 || i === 2 || i === 4 || i === 6 || i === 8){
+        for (var j = 0; j < NUM_ROWS; j+=2) {
+            var tileX = i * 45;
+            var tileY = j * 45 + 45;
+            tiles.push(new Tile(tileX, tileY, color(0, 0, 0)));
+        }
+    }
+    else {
+        for (var j = 0; j < NUM_ROWS; j+=2) {
+            var tileX = i * 45;
+            var tileY = j * 45;
+            tiles.push(new Tile(tileX, tileY, color(0, 0, 0)));
+        }
+    }
+} // for loop to put the tiles into the array given different x and y positions
+Tile.prototype.isUnderMouse = function(x, y) {
+    return x >= this.x && x <= this.x + this.size  &&
+        y >= this.y && y <= this.y + this.size;
+}; // Prototype to tell if the mouse is over the tiles
+
+var Checker = function(x, y, c) {
+    this.x = x;
+    this.y = y;
+    this.size = 40;
+    this.score = 0;
+    this.c = c;
+    this.king = false;
+}; // object checker method
+Checker.prototype.draw = function() {
+    fill(this.c);
+    stroke(255, 255, 255);
+    ellipse(this.x, this.y, this.size, this.size);
+    if(this.king === true){
+        fill(255, 255, 255);
+        text("K", this.x - 5, this.y - 5);
+    }
+}; // prototype to draw the checkers
+for(var i = 0; i <= 29; i++) {
+    var checkerX = tiles[i].x + 22;
+    var checkerY = tiles[i].y + 22;
+    tiles[i].occupied = true;
+    rChecker.push(new Checker(checkerX, checkerY, color(255, 0, 0)));
+    tiles[i].occupied = true;
+    if(i === 0 || i === 8 || i === 16 || i === 24) {
+         i += 3;
+    }
+    if(i === 5 || i === 13 || i === 21) {
+        i += 2;
+    }
+} // for loop to put red checkers into an array with different x and y positions
+for(var i = 2; i <= 31; i++) {
+    var checkerX = tiles[i].x + 22;
+    var checkerY = tiles[i].y + 22;
+    tiles[i].occupied = true;
+    bChecker.push(new Checker(checkerX, checkerY, color(65, 65, 65)));
+    tiles[i].occupied = true;
+    if(i === 3 || i === 11 || i === 19 || i === 27) {
+         i += 3;
+    }
+    if(i === 7 || i === 15 || i === 23) {
+        i += 2;
+    }
+} // for loop to put black checkers into an array with different x and y positions
+Checker.prototype.isUnderMouse = function(x,y){
+    return x >= this.x - this.size/2 && x <= this.x + this.size/2  &&
+        y >= this.y - this.size/2 && y <= this.y + this.size/2;
+}; // Prototype to tell if the mouse is over the checkers
+
+var drawHair = function (x,y,h){
+    fill(179, 78, 242);
+    rect(x-(h/100*47),y-(h/100*54),h/100*100,h/100*100); // hair
+    };
+var drawHead = function (x,y,h){
+        fill(252, 231, 197);
+        ellipse(x+(h/100),y+(h/100),h/100*80,h/100*100); // head
+        stroke(179, 78, 242);
+        strokeWeight(h/100*8);
+        line(x-(h/100*30),y+(h/100*34),x+(h/100),y+(h/100*66)); //right chin
+        line(x+(h/100*30),y+(h/100*34),x+(h/100),y+(h/100*66)); // left chin
+        stroke(0, 0, 0);
+        strokeWeight(h/100*1);
+        line(x-(h/100*31),y+(h/100*31),x-(h/100*9),y+(h/100*49));
+        line(x+(h/100*31),y+(h/100*31),x+(h/100*9),y+(h/100*49));  
+    };
+var drawEyes = function (x,y,h){
+        fill(255, 255, 255);
+        ellipse(x-(h/100*17),y-(h/100*3),h/100*22,h/100*10); // right eye
+        ellipse(x+(h/100*17),y-(h/100*3),h/100*22,h/100*10); // left eye
+        fill(82, 57, 8);
+        ellipse(x-(h/100*17),y-(h/100*3),h/100*10,h/100*10); // right eye pupil
+        ellipse(x+(h/100*17),y-(h/100*3),h/100*10,h/100*10); //left eye pupil
+        stroke(59, 41, 5);
+        strokeWeight(h/100*2);
+        line(x-(h/100*26),y-(h/100*13),x-(h/100*10),y-(h/100*13)); // right eyebrow
+        line(x+(h/100*26),y-(h/100*13),x+(h/100*10),y-(h/100*13)); // left eyebrow 
+    };
+var drawFeatures = function (x,y,h){
+        strokeWeight(h/100*1);
+        fill(232, 116, 154);
+        arc(x+h/100,y+(h/100*29),h/100*26,h/100*12,h/100*0,180); // mouth
+        fill(252, 231, 197);
+        bezier(x+h/100,y+h/100,x+(h/100*2),y+(h/100*10),x+(h/100*15),y+(h/100*22),x-(h/100*1),y+(h/100*22)); // nose
+        noStroke();
+        fill(232, 116, 154);
+        ellipse(x-(h/100*5),y+(h/100*28),h/100*10,h/100*4); // lips
+        ellipse(x+(h/100*5),y+(h/100*28),h/100*10,h/100*4);
+    };
+var drawHair2 = function (x,y,h){
+        fill(179, 78, 242);
+        arc(x+(h/100*35),y-(h/100*43),h/100*65,h/100*61,57,197); // hair
+        ellipse(x+(h/100*44),y+(h/100*18),h/100*50,h/100*96);
+        arc(x-(h/100*25),y-(h/100*43),h/100*65,h/100*34,-44,128);
+        fill(100, 232, 232);
+        ellipse(x-(h/100*7),y-(h/100*50),h/100*114,h/100*30);
+        ellipse(x-(h/100*45),y+(h/100*38),h/100*22,h/100*36);
+        ellipse(x+(h/100*56),y-(h/100*10),h/100*40,h/100*127);
+        ellipse(x+(h/100*50),y+(h/100*48),h/100*39,h/100*45);  
+    };
+var drawShirt = function (x,y,h){
+        fill(0, 0, 0);
+        rect(x-(h/100*25),y+(h/100*63),h/100*55,h/100*45); //shirt
+        fill(255, 255, 255);
+        textSize(h/100*25);
+        text("GD",x-(h/100*17),y+(h/100*87));
+    };
+var drawHeadphones = function (x,y,h){
+        fill(19, 46, 12);
+        ellipse(x-(h/100*42),y+(h/100*5),h/100*10,h/100*26); // headphones
+        ellipse(x+(h/100*35),y+(h/100*5),h/100*10,h/100*26);
+        stroke(19, 46, 12);
+        strokeWeight(h/100*5);
+        line(x-(h/100*41),y-(h/100*10),x-(h/100*36),y-(h/100*36));
+        line(x+(h/100*36),y-(h/100*10),x+(h/100*31),y-(h/100*36));
+        line(x-(h/100*34),y-(h/100*36),x+(h/100*27),y-(h/100*36));
+        line(x-(h/100*32),y+(h/100*30),x-(h/100*39),y+(h/100*16));
+    };
+var drawShoulders = function (x,y,h){
+        noStroke();
+        fill(252, 231, 197);
+        rect(x-(h/100*11),y+(h/100*50),h/100*22,h/100*13); //neck
+        arc(x+(h/100*2),y+(h/100*61),h/100*50,h/100*53,0,180);
+        ellipse(x-(h/100*29),y+(h/100*100),h/100*15,h/100*77); // right arm
+        ellipse(x+(h/100*32),y+(h/100*100),h/100*15,h/100*77); // left arm
+        fill(179, 78, 242);
+        ellipse(x-(h/100*19),y+(h/100*59),h/100*15,h/100*33);
+        triangle(x-(h/100*24),y+(h/100*45),x-(h/100*36),y+(h/100*43),x-(h/100*25),y+(h/100*63));
+        ellipse(x+(h/100*25),y+(h/100*59),h/100*26,h/100*39);
+        triangle(x+(h/100*24),y+(h/100*38),x+(h/100*35),y+(h/100*47),x+(h/100*38),y+(h/100*30));
+    };
+var drawBitmoji = function(x,y,h){
+    drawHair(x+50,y,h);
+    drawHead(x+50,y,h);
+    drawEyes(x+50,y,h);
+    drawFeatures(x+50,y,h);
+    drawHair2(x+50,y,h);
+    drawShirt(x+50,y,h);
+    drawHeadphones(x+50,y,h);
+    drawShoulders(x+50,y,h);
+}; // Genevieve's Bitmoji
+
+var splash = function(){
+    stillPlaying = false;
+    background(100, 232, 232);
+    currentScene = 0;
+    fill(0, 0, 0);
+    textSize(50);
+    text("    Checkers",35,42);
+    textSize(20);
+    text("Capture or block your opponent so they cant",5,100);
+    text("move. Try and jump your opponents pieces",7,120);
+    text("and removing them from the board.",50,140);
+    text("Genevieve Drouin & Lydia Nicolau",46,170);
+    drawBitmoji(200,225,50);
+    strokeWeight(1);
+    drawBitmojiLydia (100,173,88);
+    start.draw();
+}; // splash scene
+
+var game = function() {
+    stillPlaying = true;
+    background(255, 255, 255);
+    for (var i = 0; i < tiles.length; i++) {
+        tiles[i].draw();
+    }
+    for (var i = 0; i < rChecker.length; i++){
+        rChecker[i].draw();
+    }
+    for (var i = 0; i < bChecker.length; i++){
+        bChecker[i].draw();
+    }
+    home.draw();
+    fill(0, 0, 0);
+    textSize(13);
+    text("Black Team Score: " + bScore, 155, 360);
+    text("Red Team Score: " + rScore, 155, 380);
+    textSize(14);
+    text("Time: "+ round(seconds) + " seconds", 276     , 370);
+    textSize(14);
+    text("Player", 360, 5);
+    text("turn", 370, 75);
+    fill(player[playersTurn]);
+    rect(360, 25, 40, 50);
+    }; // game scene
+
+
+mouseClicked = function() {
+    if(currentScene === 0){
+        start.handleMouseClick(); // if on the splash scene the start button can be pressed
+    }
+    if(currentScene === 1){
+        home.handleMouseClick(); // if on the game scene the home button can be pressed
+        if(playersTurn === 0 && stillPlaying === true){
+            if(selectedTile.length === 2){
+                selectedTile.length = 0;
+            } // empty selected tiles if there are 2 elements in the array selected tile
+            for(var j = 0; j < tiles.length; j++){
+                for(var m = 0; m < bChecker.length; m++){
+                    if(selectedTile.length === 0 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true){
+                        if(bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                            tiles[j].color = color(255, 255, 0);
+                            selectedTile.push(tiles[j]);
+                        }
+                    } // seclect the checker you want to move
+                    if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 1){
+                        for(var l = 0; l < tiles.length; l++){
+                            for(var i = 0; i < rChecker.length; i++){
+                                if(bChecker[m].king === true){
+                                    if(rChecker[i].x === bChecker[m].x + 45 && rChecker[i].y === bChecker[m].y - 45 || rChecker[i].x === bChecker[m].x - 45 && rChecker[i].y === bChecker[m].y - 45 || rChecker[i].x === bChecker[i] + 45 && rChecker[i].y === bChecker[m].y + 45 || rChecker[i].x === bChecker[m].x - 45 && rChecker[i].y === bChecker[m].y + 45){
+                                        if(tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y + 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y + 90 || tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y - 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y - 90){
+                                            if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                                bChecker[m].x = tiles[l].x + 22;
+                                                bChecker[m].y = tiles[l].y + 22;
+                                                tiles[l].occupied = true;
+                                                tiles[j].occupied = false;
+                                                tiles[j].color = color(0, 0, 0);
+                                                playersTurn += 1;
+                                                for(var p = 0; p < tiles.length; p++){
+                                                    if(rChecker[i].x === tiles[p].x + 22 && rChecker[i].y === tiles[p].y + 22){
+                                                        tiles[p].occupied = false;
+                                                    }
+                                                }
+                                                rChecker[i].x = 500;
+                                                
+                                            }
+                                        }
+                                    }
+                                } // black king checker can jump red checker
+                                else if(rChecker[i].x === bChecker[m].x + 45 && rChecker[i].y === bChecker[m].y - 45 || rChecker[i].x === bChecker[m].x - 45 && rChecker[i].y === bChecker[m].y - 45){
+                                    if(tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y - 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y - 90){
+                                if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                    bChecker[m].x = tiles[l].x + 22;
+                                    bChecker[m].y = tiles[l].y + 22;
+                                    tiles[l].occupied = true;
+                                    tiles[j].occupied = false;
+                                    tiles[j].color = color(0, 0, 0);
+                                    playersTurn += 1;
+                                    bScore += 1;
+                                    for(var p = 0; p < tiles.length; p++){
+                                        if(rChecker[i].x === tiles[p].x + 22 && rChecker[i].y === tiles[p].y + 22){
+                                            tiles[p].occupied = false;
+                                        }
+                                    }
+                                    rChecker[i].x = 500;
+                                    if(bChecker[m].x === tiles[4].x + 22 && bChecker[m].y === tiles[4].y + 22 || bChecker[m].x === tiles[12].x + 22 && bChecker[m].y === tiles[12].y + 22 || bChecker[m].x === tiles[20].x + 22 && bChecker[m].y === tiles[20].y + 22 || bChecker[m].x === tiles[28].x + 22 && bChecker[m].y === tiles[28].y + 22){
+                                        bChecker[m].king = true;
+                                    } // if the black checkers get to the other side make them kings
+                                }
+                            }
+                                } // black checker jump red checker
+                            } // jumping red checkers
+                            if(bChecker[m].king === true){
+                                if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
+                                    if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                        bChecker[m].x = tiles[l].x + 22;
+                                        bChecker[m].y = tiles[l].y + 22;
+                                        tiles[l].occupied = true;
+                                        tiles[j].occupied = false;
+                                        tiles[j].color = color(0, 0, 0);
+                                        playersTurn += 1;
+                                        bScore += 1;
+                                    }
+                                }
+                            } // move black king checher to empty tile in front or behind to a diaganol
+                            else if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
+                                if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && bChecker[m].x === tiles[j].x + 22 && bChecker[m].y === tiles[j].y + 22){
+                                    bChecker[m].x = tiles[l].x + 22;
+                                    bChecker[m].y = tiles[l].y + 22;
+                                    tiles[l].occupied = true;
+                                    tiles[j].occupied = false;
+                                    tiles[j].color = color(0, 0, 0);
+                                    playersTurn += 1;
+                                    if(bChecker[m].x === tiles[4].x + 22 && bChecker[m].y === tiles[4].y + 22 || bChecker[m].x === tiles[12].x + 22 && bChecker[m].y === tiles[12].y + 22 || bChecker[m].x === tiles[20].x + 22 && bChecker[m].y === tiles[20].y + 22 || bChecker[m].x === tiles[28].x + 22 && bChecker[m].y === tiles[28].y + 22){
+                                        bChecker[m].king = true;
+                                    } // if the black checkers get to the other side make them kings
+                                }
+                            } // move the checker to an empty tile in front of it to a diaganol
+                        }
+                    } // move checkers
+                }
+            }
+        } // move black checker
+        if(playersTurn === 1 && stillPlaying === true){
+        for(var j = 0; j < tiles.length; j++){
+            for(var m = 0; m < rChecker.length; m++){
+                if(selectedTile.length === 1 && tiles[j].color === color(0, 0, 0) && tiles[j].isUnderMouse(mouseX, mouseY) && tiles[j].occupied === true){
+                    if(rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                        tiles[j].color = color(255, 255, 0);
+                        selectedTile.push(tiles[j]);
+                    }
+                } // select the checker you want to move
+                if(tiles[j].color === color(255, 255, 0) && selectedTile.length === 2){
+                    for(var l = 0; l < tiles.length; l++){
+                        for(var i = 0; i < bChecker.length; i++){
+                                if(rChecker[m].king === true){
+                                    if(bChecker[i].x === rChecker[m].x + 45 && bChecker[i].y === rChecker[m].y - 45 || bChecker[i].x === rChecker[m].x - 45 && bChecker[i].y === rChecker[m].y - 45 || bChecker[i].x === rChecker[m].x + 45 && bChecker[i].y === rChecker[m].y + 45 || bChecker[i].x === rChecker[m].x - 45 && bChecker[i].y === rChecker[m].y + 45){
+                                        if(tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y + 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y + 90 || tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y - 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y - 90){
+                                            if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                                rChecker[m].x = tiles[l].x + 22;
+                                                rChecker[m].y = tiles[l].y + 22;
+                                                tiles[l].occupied = true;
+                                                tiles[j].occupied = false;
+                                                tiles[j].color = color(0, 0, 0);
+                                                playersTurn -= 1;
+                                                for(var p = 0; p < tiles.length; p++){
+                                                    if(bChecker[i].x === tiles[p].x + 22 && bChecker[i].y === tiles[p].y + 22){
+                                                        tiles[p].occupied = false;
+                                                    }
+                                                }
+                                                bChecker[i].x = 500;
+                                                
+                                            }
+                                        }
+                                    }
+                                } // red king checker can jump black checker
+                                else if(bChecker[i].x === rChecker[m].x + 45 && bChecker[i].y === rChecker[m].y + 45 || bChecker[i].x === rChecker[m].x - 45 && bChecker[i].y === rChecker[m].y + 45){
+                                    if(tiles[l].x === tiles[j].x + 90 && tiles[l].y === tiles[j].y + 90 || tiles[l].x === tiles[j].x - 90 && tiles[l].y === tiles[j].y + 90){
+                                if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                    rChecker[m].x = tiles[l].x + 22;
+                                    rChecker[m].y = tiles[l].y + 22;
+                                    tiles[l].occupied = true;
+                                    tiles[j].occupied = false;
+                                    tiles[j].color = color(0, 0, 0);
+                                    playersTurn -= 1;
+                                    rScore += 1;
+                                    for(var p = 0; p < tiles.length; p++){
+                                        if(bChecker[i].x === tiles[p].x + 22 && bChecker[i].y === tiles[p].y + 22){
+                                            tiles[p].occupied = false;
+                                        }
+                                    }
+                                    bChecker[i].x = 500;
+                                    if(rChecker[m].x === tiles[3].x + 22 && rChecker[m].y === tiles[3].y + 22 || rChecker[m].x === tiles[11].x + 22 && rChecker[m].y === tiles[11].y + 22 || rChecker[m].x === tiles[19].x + 22 && rChecker[m].y === tiles[19].y + 22 || rChecker[m].x === tiles[27].x + 22 && rChecker[m].y === tiles[27].y + 22){
+                        rChecker[m].king = true;
+                    } // if red checkers get to the opposite side make them kings
+                                }
+                            }
+                                } // red checker jump black checker
+                            } // jumping black checkers
+                        if(rChecker[m].king === true){
+                                if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y - 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y - 45){
+                                    if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                        rChecker[m].x = tiles[l].x + 22;
+                                        rChecker[m].y = tiles[l].y + 22;
+                                        tiles[l].occupied = true;
+                                        tiles[j].occupied = false;
+                                        tiles[j].color = color(0, 0, 0);
+                                        playersTurn -= 1;
+                                        rScore += 1;
+                                    }
+                                }
+                            } // move red king checher to empty tile in front or behind to a diaganol
+                        
+                        else if(tiles[l].x === tiles[j].x + 45 && tiles[l].y === tiles[j].y + 45 || tiles[l].x === tiles[j].x - 45 && tiles[l].y === tiles[j].y + 45){
+                            if(tiles[l].occupied === false && tiles[l].isUnderMouse(mouseX, mouseY) && rChecker[m].x === tiles[j].x + 22 && rChecker[m].y === tiles[j].y + 22){
+                                rChecker[m].x = tiles[l].x + 22;
+                                rChecker[m].y = tiles[l].y + 22;
+                                tiles[l].occupied = true;
+                                tiles[j].occupied = false;
+                                tiles[j].color = color(0, 0, 0);
+                                playersTurn -= 1;
+                                if(rChecker[m].x === tiles[3].x + 22 && rChecker[m].y === tiles[3].y + 22 || rChecker[m].x === tiles[11].x + 22 && rChecker[m].y === tiles[11].y + 22 || rChecker[m].x === tiles[19].x + 22 && rChecker[m].y === tiles[19].y + 22 || rChecker[m].x === tiles[27].x + 22 && rChecker[m].y === tiles[27].y + 22){
+                        rChecker[m].king = true;
+                    } // if red checkers get to the opposite side make them kings
+                            }
+                        } // move the checker to an empty tile under it to a diaganol
+                        }
+                    }
+                }
+            }
+        }
+    } // move red checker
+    };
+
+draw = function() {
+    if(currentScene === 0){
+        splash();} // if the current scene is 0 show splash scene
+    if(currentScene === 1){
+        game();} // if the current scene is 1 show game scene
+    if (stillPlaying === true){
+        seconds += 1/60;
+    } // if still playing is true add 1/60 to seconds so that 1 is added to seconds every second
+};
